@@ -4,7 +4,36 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello React!</title>
+    <title>Enhanced React Time Display</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+      }
+      header {
+        text-align: center;
+        background-color: #007bff;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      button {
+        margin: 10px;
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      button:hover {
+        background-color: #0056b3;
+        color: white;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
@@ -20,16 +49,48 @@
 
     <script>
       function App() {
-        //const sttime = new Date().toLocaleTimeString();
         const [time, setTime] = React.useState(new Date().toLocaleTimeString());
+        const [is24HourFormat, setIs24HourFormat] = React.useState(false);
 
-        React.useEffect(function () {
-          setInterval(function () {
-            setTime(new Date().toLocaleTimeString());
-          }, 1000);
-        }, []);
+        // Function to update time
+        const updateTime = () => {
+          const format = is24HourFormat ? "en-GB" : "en-US"; // 24-hour or 12-hour format
+          setTime(new Date().toLocaleTimeString(format));
+        };
 
-        return React.createElement("header", null, `Hello React! It's ${time}`);
+        // useEffect hook to update time every second
+        React.useEffect(() => {
+          const interval = setInterval(updateTime, 1000);
+          return () => clearInterval(interval); // Cleanup interval on component unmount
+        }, [is24HourFormat]);
+
+        // Toggle between 12-hour and 24-hour format
+        const toggleFormat = () => {
+          setIs24HourFormat((prev) => !prev);
+        };
+
+        // Reset time to current time
+        const resetTime = () => {
+          setTime(new Date().toLocaleTimeString());
+        };
+
+        return React.createElement(
+          "header",
+          null,
+          React.createElement("div", null, `Hello React! It's ${time}`),
+          React.createElement(
+            "div",
+            null,
+            React.createElement(
+              "button",
+              { onClick: toggleFormat },
+              is24HourFormat
+                ? "Switch to 12-hour format"
+                : "Switch to 24-hour format"
+            ),
+            React.createElement("button", { onClick: resetTime }, "Reset Time")
+          )
+        );
       }
 
       const root = ReactDOM.createRoot(document.getElementById("root"));
